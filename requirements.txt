@@ -1,0 +1,10 @@
+flask>=3.0.0
+opencv-python>=4.8.0
+numpy>=1.24.0
+
+# For real facial emotion detection (recommended):
+deepface>=0.0.79
+tf-keras>=2.16.0
+
+# TextBlob for text-based fallback (optional, from previous version):
+# textblob>=0.18.0

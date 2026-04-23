@@ -1,0 +1,51 @@
+{
+  "happy": [
+    {"title": "Badtameez Dil", "artist": "Pritam ft. Benny Dayal", "url": "https://www.youtube.com/watch?v=II2EO3Nw4m0", "duration": "3:37", "cover": "🎉"},
+    {"title": "Gallan Goodiyaan", "artist": "Shankar-Ehsaan-Loy", "url": "https://www.youtube.com/watch?v=M3FEGABiDYQ", "duration": "4:54", "cover": "🕺"},
+    {"title": "London Thumakda", "artist": "Labh Janjua, Sonu Kakkar", "url": "https://www.youtube.com/watch?v=uddcOjgMGMQ", "duration": "3:27", "cover": "🌞"},
+    {"title": "Desi Beat", "artist": "Yo Yo Honey Singh", "url": "https://www.youtube.com/watch?v=FlsCFoJRMqc", "duration": "3:41", "cover": "🎊"},
+    {"title": "Balam Pichkari", "artist": "Shalmali Kholgade, Vishal Dadlani", "url": "https://www.youtube.com/watch?v=1KGNZ_Oe03M", "duration": "4:02", "cover": "✨"}
+  ],
+  "sad": [
+    {"title": "Channa Mereya", "artist": "Arijit Singh", "url": "https://www.youtube.com/watch?v=284Ov7ysmfA", "duration": "4:49", "cover": "🌧️"},
+    {"title": "Agar Tum Saath Ho", "artist": "Arijit Singh, Alka Yagnik", "url": "https://www.youtube.com/watch?v=sK7riqg2mr4", "duration": "5:42", "cover": "💔"},
+    {"title": "Tujhe Bhula Diya", "artist": "Mohit Chauhan", "url": "https://www.youtube.com/watch?v=kMbTDKCxHJo", "duration": "5:05", "cover": "🌙"},
+    {"title": "Hamari Adhuri Kahani", "artist": "Arijit Singh", "url": "https://www.youtube.com/watch?v=IA0ykVBKVlA", "duration": "4:57", "cover": "🍂"},
+    {"title": "Dil Diyan Gallan", "artist": "Atif Aslam", "url": "https://www.youtube.com/watch?v=x6hqTuAnefA", "duration": "4:22", "cover": "🕯️"}
+  ],
+  "angry": [
+    {"title": "Zinda", "artist": "Siddharth Mahadevan", "url": "https://www.youtube.com/watch?v=zKBmMqtFkaU", "duration": "3:54", "cover": "🔥"},
+    {"title": "Sadda Haq", "artist": "Mohit Chauhan", "url": "https://www.youtube.com/watch?v=T7e6SvRKlGo", "duration": "4:44", "cover": "⚡"},
+    {"title": "Bhaag DK Bose", "artist": "Ram Sampath", "url": "https://www.youtube.com/watch?v=8-7PtHcM8Yc", "duration": "3:22", "cover": "💢"},
+    {"title": "Rang De Basanti", "artist": "Daler Mehndi", "url": "https://www.youtube.com/watch?v=RdwGMgALtiA", "duration": "4:33", "cover": "😤"},
+    {"title": "Khoon Chala", "artist": "Sukhwinder Singh", "url": "https://www.youtube.com/watch?v=RXGuCBqKQkw", "duration": "5:12", "cover": "🤬"}
+  ],
+  "calm": [
+    {"title": "Kun Faya Kun", "artist": "A.R. Rahman, Javed Ali", "url": "https://www.youtube.com/watch?v=T94PHkuydcw", "duration": "7:52", "cover": "🕊️"},
+    {"title": "Tum Hi Ho", "artist": "Arijit Singh", "url": "https://www.youtube.com/watch?v=Umqb9KENgmk", "duration": "4:22", "cover": "🌊"},
+    {"title": "Iktara", "artist": "Kavita Seth", "url": "https://www.youtube.com/watch?v=RIBPKPIKiOQ", "duration": "4:19", "cover": "🌸"},
+    {"title": "Luka Chuppi", "artist": "Lata Mangeshkar, A.R. Rahman", "url": "https://www.youtube.com/watch?v=H2z5GEAaS8k", "duration": "5:42", "cover": "💧"},
+    {"title": "Dil Se Re", "artist": "A.R. Rahman, Lata Mangeshkar", "url": "https://www.youtube.com/watch?v=7pvtdMkYfVg", "duration": "5:28", "cover": "🍃"}
+  ],
+  "energetic": [
+    {"title": "Malhari", "artist": "Vishal Dadlani", "url": "https://www.youtube.com/watch?v=l_MyUGq7pgs", "duration": "3:43", "cover": "💪"},
+    {"title": "Dhoom Machale", "artist": "Sunidhi Chauhan", "url": "https://www.youtube.com/watch?v=NsADGwkdyGM", "duration": "4:05", "cover": "🏆"},
+    {"title": "Jai Ho", "artist": "Sukhwinder Singh", "url": "https://www.youtube.com/watch?v=xwBpKFi8QLM", "duration": "5:24", "cover": "⚡"},
+    {"title": "Tune Maari Entriyaan", "artist": "Vishal Dadlani, Benny Dayal", "url": "https://www.youtube.com/watch?v=8KMgAHt_4rQ", "duration": "3:59", "cover": "🔋"},
+    {"title": "Nachan Farrate", "artist": "Raftaar, Kanika Kapoor", "url": "https://www.youtube.com/watch?v=aFLJLaqQjgU", "duration": "3:32", "cover": "🌍"}
+  ],
+  "romantic": [
+    {"title": "Pehla Nasha", "artist": "Udit Narayan, Sadhana Sargam", "url": "https://www.youtube.com/watch?v=_CHkBJ1VR_s", "duration": "5:27", "cover": "🌹"},
+    {"title": "Gerua", "artist": "Arijit Singh, Antara Mitra", "url": "https://www.youtube.com/watch?v=AEIVhBS6baE", "duration": "4:46", "cover": "❤️"},
+    {"title": "Raabta", "artist": "Arijit Singh", "url": "https://www.youtube.com/watch?v=7K7O9MqSJzg", "duration": "4:03", "cover": "💕"},
+    {"title": "Tere Sang Yaara", "artist": "Atif Aslam", "url": "https://www.youtube.com/watch?v=mDIGLCAutOM", "duration": "4:18", "cover": "💌"},
+    {"title": "Tere Bina", "artist": "A.R. Rahman, Chinmayi", "url": "https://www.youtube.com/watch?v=qGIcfHMnHVg", "duration": "5:27", "cover": "🥂"}
+  ],
+  "focused": [
+    {"title": "Roobaroo", "artist": "A.R. Rahman, Naresh Iyer", "url": "https://www.youtube.com/watch?v=3MLgRm4d4Cc", "duration": "4:10", "cover": "☕"},
+    {"title": "Khwaja Mere Khwaja", "artist": "A.R. Rahman", "url": "https://www.youtube.com/watch?v=apHXlZkRSxs", "duration": "7:03", "cover": "📚"},
+    {"title": "Mann", "artist": "Udit Narayan, Kavita Krishnamurthy", "url": "https://www.youtube.com/watch?v=8KvMSMcA5bA", "duration": "5:12", "cover": "⏳"},
+    {"title": "Jiya Re", "artist": "A.R. Rahman, Shafqat Amanat Ali", "url": "https://www.youtube.com/watch?v=lQRiLOIxoEM", "duration": "4:48", "cover": "🚀"},
+    {"title": "Tere Bina Zindagi", "artist": "Lata Mangeshkar, Kishore Kumar", "url": "https://www.youtube.com/watch?v=GYRkHi_UjKs", "duration": "4:35", "cover": "🎵"}
+  ]
+}
