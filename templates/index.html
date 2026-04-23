@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MoodWave CV</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════ BASE ═══════════════════════════ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --A:#00FFA3;   /* accent */
+  --BG:#080f0d;  /* page bg */
+  --C1:#0f1a17;  /* card bg */
+  --C2:#162420;  /* card hover */
+  --BD:rgba(0,255,163,.12); /* border */
+  --MT:#3a6057;  /* muted text */
+  --FG:#d8f0ea;  /* foreground */
+  --R:14px;
+  --T:all .4s cubic-bezier(.23,1,.32,1);
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--BG);color:var(--FG);
+  font-family:'Space Grotesk',sans-serif;
+  min-height:100vh;overflow-x:hidden;
+  transition:background 1.2s ease;
+}
+/* scanlines */
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:900;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,
+    rgba(0,0,0,.018) 3px,rgba(0,0,0,.018) 4px);
+}
+/* glow orbs */
+.orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.1;transition:background 2s}
+.orb1{width:600px;height:600px;top:-250px;left:-180px;background:var(--A);animation:o1 20s ease-in-out infinite}
+.orb2{width:400px;height:400px;bottom:-150px;right:-120px;background:#5040ff;animation:o2 24s ease-in-out infinite}
+@keyframes o1{0%,100%{transform:translate(0,0)}50%{transform:translate(60px,40px)}}
+@keyframes o2{0%,100%{transform:translate(0,0)}50%{transform:translate(-50px,-60px)}}
+
+.page{max-width:1200px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+
+/* ═══════════════════════════ HEADER ═════════════════════════ */
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:28px 0 20px;border-bottom:1px solid var(--BD);
+}
+.logo{font-size:22px;font-weight:700;letter-spacing:-.5px}
+.logo b{color:var(--A)}
+.pill{
+  font-family:'Space Mono',monospace;font-size:10px;
+  background:var(--C1);border:1px solid var(--BD);
+  padding:5px 12px;border-radius:99px;color:var(--MT);
+  transition:color .4s;
+}
+.pill.ok{color:var(--A)}
+
+/* ═══════════════════════════ LAYOUT ════════════════════════ */
+.grid{display:grid;grid-template-columns:380px 1fr;gap:20px;padding:20px 0 40px}
+@media(max-width:820px){.grid{grid-template-columns:1fr}}
+
+/* ═══════════════════════════ CAMERA PANEL ══════════════════ */
+.left{display:flex;flex-direction:column;gap:12px}
+
+/* camera box */
+.cambox{
+  position:relative;border-radius:var(--R);overflow:hidden;
+  border:1px solid var(--BD);background:#000;aspect-ratio:4/3;
+}
+video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1);display:block}
+#cvs{position:absolute;inset:0;width:100%;height:100%;transform:scaleX(-1);pointer-events:none}
+
+/* bracket corners */
+.cambox i{position:absolute;width:16px;height:16px;border-color:var(--A);border-style:solid;opacity:.6;z-index:4}
+.cambox i.tl{top:8px;left:8px;border-width:2px 0 0 2px}
+.cambox i.tr{top:8px;right:8px;border-width:2px 2px 0 0}
+.cambox i.bl{bottom:8px;left:8px;border-width:0 0 2px 2px}
+.cambox i.br{bottom:8px;right:8px;border-width:0 2px 2px 0}
+
+/* scan sweep line */
+#sweep{
+  position:absolute;left:0;right:0;top:0;height:2px;z-index:5;
+  background:linear-gradient(90deg,transparent,var(--A),transparent);
+  filter:blur(1px);opacity:0;pointer-events:none;
+}
+#sweep.run{animation:swp 1s ease-in-out forwards}
+@keyframes swp{0%{top:0;opacity:0}8%{opacity:.95}92%{opacity:.95}100%{top:100%;opacity:0}}
+
+/* idle screen */
+#idle{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;
+  background:rgba(8,15,13,.8);backdrop-filter:blur(6px);
+  z-index:6;border-radius:var(--R);transition:opacity .35s
+}
+#idle.hide{opacity:0;pointer-events:none}
+#idle .big{font-size:40px;opacity:.35}
+#idle p{font-family:'Space Mono',monospace;font-size:11px;color:var(--MT);text-align:center;line-height:1.9}
+
+/* status bar */
+.cambar{
+  position:absolute;bottom:0;left:0;right:0;z-index:3;
+  padding:26px 12px 10px;
+  background:linear-gradient(transparent,rgba(0,0,0,.88));
+  display:flex;align-items:center;gap:7px;
+}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--A);box-shadow:0 0 6px var(--A);animation:bk 2s ease-in-out infinite;flex-shrink:0}
+.dot.off{background:var(--MT);box-shadow:none;animation:none}
+@keyframes bk{0%,100%{opacity:1}50%{opacity:.2}}
+.camtxt{font-family:'Space Mono',monospace;font-size:10px;color:var(--A);letter-spacing:.6px}
+
+/* ── camera toggle row ── */
+.camrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sm{
+  padding:9px 12px;border-radius:10px;cursor:pointer;border:none;
+  font-family:'Space Mono',monospace;font-size:10px;font-weight:700;
+  letter-spacing:.5px;transition:var(--T);
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.sm:disabled{opacity:.3;cursor:not-allowed}
+.sm.start{background:rgba(0,255,163,.08);color:var(--FG);border:1px solid var(--BD)}
+.sm.start:hover:not(:disabled){border-color:var(--A);background:rgba(0,255,163,.14)}
+.sm.stop{background:rgba(255,60,60,.07);color:#ff6b6b;border:1px solid rgba(255,60,60,.2)}
+.sm.stop:hover:not(:disabled){background:rgba(255,60,60,.14)}
+
+/* ════ SCAN BUTTON ════ */
+.scan{
+  width:100%;padding:16px 20px;border-radius:var(--R);border:none;cursor:pointer;
+  background:var(--A);color:#041a10;
+  font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  transition:var(--T);box-shadow:0 4px 28px rgba(0,255,163,.25);
+  position:relative;overflow:hidden;
+}
+.scan::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.18),transparent);
+  pointer-events:none;
+}
+.scan:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 38px rgba(0,255,163,.45)}
+.scan:active:not(:disabled){transform:scale(.98)}
+.scan:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+.scan .ico{font-size:18px}
+.spin{display:inline-block;width:16px;height:16px;border-radius:50%;border:2px solid rgba(4,26,16,.3);border-top-color:#041a10;animation:sp .65s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* ── emotion bars ── */
+.ebox{background:var(--C1);border:1px solid var(--BD);border-radius:var(--R);padding:16px}
+.etitle{font-family:'Space Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--MT);margin-bottom:12px}
+.erow{display:flex;align-items:center;gap:9px;margin-bottom:6px}
+.elbl{font-family:'Space Mono',monospace;font-size:10px;color:var(--MT);width:62px;flex-shrink:0;text-transform:capitalize}
+.etrack{flex:1;height:5px;background:rgba(255,255,255,.05);border-radius:99px;overflow:hidden}
+.efill{height:100%;border-radius:99px;transition:width .8s cubic-bezier(.23,1,.32,1)}
+.epct{font-family:'Space Mono',monospace;font-size:9px;color:var(--MT);width:30px;text-align:right}
+.epholder{font-family:'Space Mono',monospace;font-size:10px;color:var(--MT);text-align:center;padding:8px 0}
+
+/* ═══════════════════════════ RIGHT PANEL ═══════════════════ */
+.right{display:flex;flex-direction:column;gap:16px}
+
+/* alert strip */
+.strip{
+  display:none;padding:10px 16px;border-radius:10px;
+  font-family:'Space Mono',monospace;font-size:11px;line-height:1.8;
+}
+.strip.show{display:block}
+.strip.warn{background:rgba(255,200,0,.07);border:1px solid rgba(255,200,0,.2);color:#FFCA28}
+.strip.err {background:rgba(255,60,60,.07);border:1px solid rgba(255,60,60,.2);color:#ff6b6b}
+.strip.info{background:rgba(0,255,163,.05);border:1px solid rgba(0,255,163,.15);color:var(--MT)}
+
+/* ── mood card ── */
+.mcard{
+  background:var(--C1);border:1px solid var(--BD);border-radius:var(--R);
+  padding:24px 28px;display:flex;gap:20px;align-items:center;
+  position:relative;overflow:hidden;transition:border-color .8s;
+}
+.mcard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--A);transition:background .8s}
+.memoji{font-size:68px;line-height:1;filter:drop-shadow(0 0 18px var(--A));transition:var(--T);flex-shrink:0}
+.minfo{flex:1}
+.mlbl{font-family:'Space Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:3px;color:var(--MT);margin-bottom:5px}
+.mname{font-size:42px;font-weight:700;letter-spacing:-1px;line-height:1;text-transform:capitalize;color:var(--A);transition:color .8s}
+.mdesc{color:var(--MT);font-size:13px;margin-top:4px}
+.cbar-row{display:flex;align-items:center;gap:10px;margin-top:12px}
+.cnum{font-family:'Space Mono',monospace;font-size:24px;font-weight:700;color:var(--A);transition:color .8s;line-height:1;min-width:60px}
+.clbl{font-family:'Space Mono',monospace;font-size:8px;color:var(--MT);text-transform:uppercase;letter-spacing:2px}
+.cbar{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden}
+.cfill{height:100%;border-radius:99px;background:var(--A);box-shadow:0 0 8px var(--A);transition:width 1s cubic-bezier(.23,1,.32,1),background .8s}
+
+/* ── player ── */
+.player{background:var(--C1);border:1px solid var(--BD);border-radius:var(--R);overflow:hidden}
+.pgrid{display:grid;grid-template-columns:1fr 1.15fr}
+@media(max-width:560px){.pgrid{grid-template-columns:1fr}}
+.pleft{padding:20px;border-right:1px solid var(--BD)}
+.plbl{font-family:'Space Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--MT);margin-bottom:12px}
+.tart{
+  width:68px;height:68px;background:rgba(255,255,255,.04);border-radius:12px;
+  border:1px solid var(--BD);display:flex;align-items:center;justify-content:center;
+  font-size:32px;margin-bottom:12px;transition:var(--T)
+}
+.tname{font-size:15px;font-weight:600;line-height:1.3;margin-bottom:2px}
+.tartist{font-size:11px;color:var(--MT)}
+.tdur{font-family:'Space Mono',monospace;font-size:10px;color:var(--MT);margin-top:3px}
+.pctrl{display:flex;align-items:center;gap:7px;margin-top:14px}
+.pb{
+  background:var(--C2);border:1px solid var(--BD);color:var(--FG);
+  cursor:pointer;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:12px;transition:var(--T);
+}
+.pb:hover{border-color:var(--A);background:rgba(0,255,163,.1)}
+.pb.pg{width:32px;height:32px}
+.pb.pp{width:44px;height:44px;background:var(--A);border-color:var(--A);color:#041a10;font-size:16px;box-shadow:0 4px 18px rgba(0,255,163,.3)}
+.pb.pp:hover{transform:scale(1.08);box-shadow:0 6px 26px rgba(0,255,163,.5)}
+/* wave */
+.wav{display:flex;gap:2px;align-items:center;height:18px;margin-left:4px}
+.wb{width:3px;border-radius:3px;background:var(--A);animation:wv .9s ease-in-out infinite}
+.wb:nth-child(1){height:7px;animation-delay:0s}
+.wb:nth-child(2){height:13px;animation-delay:.1s}
+.wb:nth-child(3){height:9px;animation-delay:.2s}
+.wb:nth-child(4){height:17px;animation-delay:.3s}
+.wb:nth-child(5){height:8px;animation-delay:.4s}
+@keyframes wv{0%,100%{transform:scaleY(.3);opacity:.3}50%{transform:scaleY(1);opacity:1}}
+.wav.paused .wb{animation-play-state:paused}
+/* yt */
+.yt{padding:12px}
+.yt iframe{width:100%;aspect-ratio:16/9;border-radius:10px;border:none;display:block}
+
+/* ── playlist ── */
+.plist{background:var(--C1);border:1px solid var(--BD);border-radius:var(--R);overflow:hidden}
+.ph{padding:16px 20px 10px;font-family:'Space Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--MT);border-bottom:1px solid var(--BD)}
+.pe{padding:16px 20px;font-family:'Space Mono',monospace;font-size:10px;color:var(--MT)}
+.pi{display:flex;align-items:center;gap:12px;padding:10px 20px;cursor:pointer;transition:background .15s}
+.pi:hover{background:rgba(255,255,255,.025)}
+.pi.on{background:rgba(0,255,163,.06)}
+.pi .n{font-family:'Space Mono',monospace;font-size:10px;color:var(--MT);width:16px;text-align:center;flex-shrink:0}
+.pi .em{font-size:18px;flex-shrink:0}
+.pi .m{flex:1;min-width:0}
+.pi .m .t{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pi .m .a{font-size:11px;color:var(--MT);margin-top:1px}
+.pi .d{font-family:'Space Mono',monospace;font-size:10px;color:var(--MT);flex-shrink:0}
+
+footer{text-align:center;padding:20px 0 32px;font-family:'Space Mono',monospace;font-size:10px;color:var(--MT);border-top:1px solid var(--BD)}
+footer b{color:var(--A)}
+</style>
+</head>
+<body>
+<div class="orbs"><div class="orb orb1" id="o1"></div><div class="orb orb2"></div></div>
+
+<div class="page">
+  <header>
+    <div class="logo">Mood<b>Wave</b> <span style="font-size:10px;background:var(--A);color:#041a10;padding:2px 7px;border-radius:4px;font-family:'Space Mono',monospace;vertical-align:middle;letter-spacing:1px">CV</span></div>
+    <div class="pill" id="enginePill">checking…</div>
+  </header>
+
+  <!-- alerts -->
+  <div class="strip warn" id="sDemo" style="margin-top:14px">⚠ Demo mode active. For real detection: <b>pip install deepface tf-keras</b></div>
+  <div class="strip err"  id="sErr"  style="margin-top:14px"></div>
+  <div class="strip info" id="sInfo" style="margin-top:14px"></div>
+
+  <div class="grid">
+    <!-- ── LEFT ── -->
+    <div class="left">
+
+      <div class="cambox" id="cambox">
+        <i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i>
+        <div id="sweep"></div>
+
+        <div id="idle">
+          <div class="big">📷</div>
+          <p>Click <b>Start Camera</b><br>then press <b>Scan My Mood</b></p>
+        </div>
+
+        <video id="vid" autoplay playsinline muted></video>
+        <canvas id="cvs"></canvas>
+
+        <div class="cambar">
+          <div class="dot off" id="dot"></div>
+          <span class="camtxt" id="camtxt">STANDBY</span>
+        </div>
+      </div>
+
+      <div class="camrow">
+        <button class="sm start" id="btnOn"  onclick="startCam()">📷 Start Camera</button>
+        <button class="sm stop"  id="btnOff" onclick="stopCam()" disabled>⏹ Stop</button>
+      </div>
+
+      <!-- ★ THE SCAN BUTTON ★ -->
+      <button class="scan" id="scanBtn" onclick="doScan()" disabled>
+        <span class="ico">🔍</span>
+        <span id="scanTxt">SCAN MY MOOD</span>
+      </button>
+
+      <!-- emotion bars -->
+      <div class="ebox">
+        <div class="etitle">⬡ emotion breakdown</div>
+        <div id="ebars"><div class="epholder">Press Scan to analyse your face</div></div>
+      </div>
+
+    </div>
+
+    <!-- ── RIGHT ── -->
+    <div class="right">
+
+      <!-- mood card -->
+      <div class="mcard" id="mcard">
+        <div class="memoji" id="memo">🎵</div>
+        <div class="minfo">
+          <div class="mlbl">Your Mood</div>
+          <div class="mname" id="mname">Waiting…</div>
+          <div class="mdesc" id="mdesc">Scan your face to detect your mood</div>
+          <div class="cbar-row">
+            <div><div class="cnum" id="cnum">—</div><div class="clbl">Confidence</div></div>
+            <div class="cbar"><div class="cfill" id="cfill" style="width:0"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- player -->
+      <div class="player">
+        <div class="pgrid">
+          <div class="pleft">
+            <div class="plbl">▶ now playing</div>
+            <div class="tart" id="tart">🎵</div>
+            <div class="tname"   id="tname">No track loaded</div>
+            <div class="tartist" id="tartist">—</div>
+            <div class="tdur"    id="tdur">—</div>
+            <div class="pctrl">
+              <button class="pb pg" onclick="prevT()">⏮</button>
+              <button class="pb pp" id="ppbtn" onclick="togglePlay()">▶</button>
+              <button class="pb pg" onclick="nextT()">⏭</button>
+              <div class="wav paused" id="wav">
+                <div class="wb"></div><div class="wb"></div><div class="wb"></div>
+                <div class="wb"></div><div class="wb"></div>
+              </div>
+            </div>
+          </div>
+          <div class="yt"><iframe id="ytf" src="" allow="autoplay;encrypted-media" allowfullscreen></iframe></div>
+        </div>
+      </div>
+
+      <!-- playlist -->
+      <div class="plist">
+        <div class="ph">♪ Mood Playlist</div>
+        <div id="plistBody"><div class="pe">Playlist loads after scanning</div></div>
+      </div>
+
+    </div>
+  </div>
+  <footer>MoodWave <b>CV</b> · DeepFace + OpenCV + Flask · Single-button mood scan</footer>
+</div>
+
+<script>
+// ── state ──────────────────────────────────────────────────────────────────
+let CAM=null, PLAYLIST=[], IDX=0, PLAYING=false, MOOD=null;
+
+const MCOL={happy:"#FFD700",sad:"#6B8CFF",angry:"#FF4444",
+            calm:"#00FFA3",energetic:"#FF8C00",romantic:"#FF69B4",focused:"#00BFFF"};
+const ECOL={happy:"#FFD700",sad:"#6B8CFF",angry:"#FF4444",
+            neutral:"#00FFA3",surprise:"#FF8C00",fear:"#9B59B6",disgust:"#FF69B4"};
+
+// ── camera ────────────────────────────────────────────────────────────────
+async function startCam(){
+  try{
+    CAM=await navigator.mediaDevices.getUserMedia({video:{width:{ideal:640},height:{ideal:480},facingMode:'user'}});
+    const v=document.getElementById('vid');
+    v.srcObject=CAM;
+    v.onloadedmetadata=()=>{
+      resizeCvs();
+      document.getElementById('idle').classList.add('hide');
+      setStatus(true,'READY — PRESS SCAN');
+      document.getElementById('btnOn').disabled=true;
+      document.getElementById('btnOff').disabled=false;
+      document.getElementById('scanBtn').disabled=false;
+    };
+  }catch(e){showErr('Camera error: '+e.message);}
+}
+
+function stopCam(){
+  if(CAM){CAM.getTracks().forEach(t=>t.stop());CAM=null;}
+  document.getElementById('vid').srcObject=null;
+  document.getElementById('idle').classList.remove('hide');
+  clearCvs();
+  setStatus(false,'STANDBY');
+  document.getElementById('btnOn').disabled=false;
+  document.getElementById('btnOff').disabled=true;
+  document.getElementById('scanBtn').disabled=true;
+}
+
+function resizeCvs(){
+  const v=document.getElementById('vid'),c=document.getElementById('cvs');
+  c.width=v.videoWidth||640;c.height=v.videoHeight||480;
+}
+
+// ── scan ──────────────────────────────────────────────────────────────────
+async function doScan(){
+  const v=document.getElementById('vid');
+  if(!CAM||v.readyState<2){showErr('Camera not ready');return;}
+
+  // button → loading
+  const btn=document.getElementById('scanBtn');
+  btn.disabled=true;
+  document.getElementById('scanTxt').innerHTML='<span class="spin"></span> Analysing…';
+  setStatus(true,'SCANNING…');
+
+  // sweep animation
+  const sw=document.getElementById('sweep');
+  sw.classList.remove('run');void sw.offsetWidth;sw.classList.add('run');
+
+  // capture frame
+  const c=document.createElement('canvas');
+  c.width=v.videoWidth||640;c.height=v.videoHeight||480;
+  c.getContext('2d').drawImage(v,0,0);
+  const img=c.toDataURL('image/jpeg',.88);
+
+  try{
+    const res=await fetch('/api/scan',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({image:img})
+    });
+    const d=await res.json();
+
+    if(!res.ok||!d.ok){
+      showErr('Error: '+(d.error||res.status));
+      setStatus(true,'ERROR');
+      return;
+    }
+
+    if(!d.face){
+      showInfo(d.msg||'No face detected — face camera, improve lighting.');
+      setStatus(true,'NO FACE — TRY AGAIN');
+      clearCvs();
+      return;
+    }
+
+    // success!
+    hideAll();
+    if(d.demo) document.getElementById('sDemo').classList.add('show');
+
+    applyMood(d);
+    drawBars(d.emotions);
+    drawBox(d.region,d.mood);
+    setStatus(true,`LOCKED · ${d.engine} · ${d.emotion.toUpperCase()}`);
+    document.getElementById('enginePill').textContent='Engine: '+d.engine;
+    document.getElementById('enginePill').classList.add('ok');
+
+  }catch(e){
+    showErr('Request failed: '+e.message+'. Is Flask running?');
+    setStatus(true,'ERROR');
+  }finally{
+    btn.disabled=false;
+    document.getElementById('scanTxt').textContent='🔍 SCAN MY MOOD';
+  }
+}
+
+// ── apply result ──────────────────────────────────────────────────────────
+function applyMood(d){
+  const col=MCOL[d.mood]||'#00FFA3';
+  // theme
+  document.documentElement.style.setProperty('--A',col);
+  document.body.style.background=d.meta?.bg||'#080f0d';
+  document.getElementById('o1').style.background=col;
+  // card
+  document.getElementById('memo').textContent=d.meta?.emoji||'🎵';
+  document.getElementById('mname').textContent=d.mood;
+  document.getElementById('mname').style.color=col;
+  document.getElementById('mdesc').textContent=(d.meta?.label||'')+'  ·  '+d.emotion;
+  document.getElementById('cnum').textContent=Math.round(d.conf)+'%';
+  document.getElementById('cnum').style.color=col;
+  document.getElementById('cfill').style.width=d.conf+'%';
+  document.getElementById('cfill').style.background=col;
+  document.getElementById('cfill').style.boxShadow='0 0 8px '+col;
+  document.getElementById('mcard').style.borderColor=col+'44';
+  // playlist + play
+  MOOD=d.mood; PLAYLIST=d.playlist||[]; IDX=0;
+  renderPlist();
+  if(PLAYLIST.length>0) loadTrack(0);
+}
+
+function drawBars(emos){
+  if(!emos){return;}
+  const sorted=Object.entries(emos).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('ebars').innerHTML=sorted.map(([e,v])=>{
+    const p=Math.min(100,Math.max(0,parseFloat(v)||0)).toFixed(1);
+    const col=ECOL[e]||'#00FFA3';
+    return `<div class="erow">
+      <div class="elbl">${e}</div>
+      <div class="etrack"><div class="efill" style="width:${p}%;background:${col};box-shadow:0 0 5px ${col}"></div></div>
+      <div class="epct">${Math.round(p)}%</div>
+    </div>`;
+  }).join('');
+}
+
+function drawBox(r,mood){
+  const cvs=document.getElementById('cvs');
+  const ctx=cvs.getContext('2d');
+  ctx.clearRect(0,0,cvs.width,cvs.height);
+  if(!r||!r.w) return;
+  const col=MCOL[mood]||'#00FFA3';
+  const p=10,cx=18;
+  const {x,y,w,h}=r;
+  const rx=x-p,ry=y-p,rw=w+p*2,rh=h+p*2;
+  ctx.strokeStyle=col;ctx.lineWidth=2;ctx.shadowBlur=12;ctx.shadowColor=col;
+  ctx.beginPath();
+  ctx.moveTo(rx+cx,ry);ctx.lineTo(rx,ry);ctx.lineTo(rx,ry+cx);
+  ctx.moveTo(rx+rw-cx,ry);ctx.lineTo(rx+rw,ry);ctx.lineTo(rx+rw,ry+cx);
+  ctx.moveTo(rx,ry+rh-cx);ctx.lineTo(rx,ry+rh);ctx.lineTo(rx+cx,ry+rh);
+  ctx.moveTo(rx+rw-cx,ry+rh);ctx.lineTo(rx+rw,ry+rh);ctx.lineTo(rx+rw,ry+rh-cx);
+  ctx.stroke();ctx.shadowBlur=0;
+}
+function clearCvs(){const c=document.getElementById('cvs');c.getContext('2d').clearRect(0,0,c.width,c.height);}
+
+// ── player ────────────────────────────────────────────────────────────────
+function loadTrack(i){
+  IDX=i;const t=PLAYLIST[i];if(!t)return;
+  document.getElementById('tart').textContent=t.cover;
+  document.getElementById('tname').textContent=t.title;
+  document.getElementById('tartist').textContent=t.artist;
+  document.getElementById('tdur').textContent=t.duration;
+  document.getElementById('ytf').src=t.yt_id
+    ?`https://www.youtube.com/embed/${t.yt_id}?autoplay=1&rel=0`:'';
+  PLAYING=true;
+  document.getElementById('ppbtn').textContent='⏸';
+  document.getElementById('wav').classList.remove('paused');
+  document.querySelectorAll('.pi').forEach(el=>el.classList.remove('on'));
+  const el=document.getElementById('pi'+i);
+  if(el){el.classList.add('on');el.scrollIntoView({block:'nearest'});}
+}
+
+function togglePlay(){
+  PLAYING=!PLAYING;
+  document.getElementById('ppbtn').textContent=PLAYING?'⏸':'▶';
+  if(!PLAYING){document.getElementById('ytf').src='';document.getElementById('wav').classList.add('paused');}
+  else loadTrack(IDX);
+}
+function nextT(){loadTrack((IDX+1)%PLAYLIST.length);}
+function prevT(){loadTrack((IDX-1+PLAYLIST.length)%PLAYLIST.length);}
+
+function renderPlist(){
+  document.getElementById('plistBody').innerHTML=PLAYLIST.length
+    ?PLAYLIST.map((t,i)=>`
+      <div class="pi ${i===IDX?'on':''}" id="pi${i}" onclick="loadTrack(${i})">
+        <div class="n">${i+1}</div>
+        <div class="em">${t.cover}</div>
+        <div class="m"><div class="t">${t.title}</div><div class="a">${t.artist}</div></div>
+        <div class="d">${t.duration}</div>
+      </div>`).join('')
+    :'<div class="pe">No tracks for this mood</div>';
+}
+
+// ── helpers ───────────────────────────────────────────────────────────────
+function setStatus(on,txt){
+  document.getElementById('dot').className='dot'+(on?'':' off');
+  document.getElementById('camtxt').textContent=txt;
+}
+function hideAll(){['sDemo','sErr','sInfo'].forEach(id=>document.getElementById(id).classList.remove('show'));}
+function showErr(m){hideAll();const e=document.getElementById('sErr');e.textContent='❌ '+m;e.classList.add('show');}
+function showInfo(m){hideAll();const e=document.getElementById('sInfo');e.textContent='ℹ '+m;e.classList.add('show');}
+
+// ── init ──────────────────────────────────────────────────────────────────
+(async()=>{
+  try{
+    const r=await fetch('/api/status');
+    const d=await r.json();
+    const pill=document.getElementById('enginePill');
+    if(d.deepface){pill.textContent='Engine: DeepFace ✅';pill.classList.add('ok');}
+    else{pill.textContent='Engine: Demo Mode ⚠️';document.getElementById('sDemo').classList.add('show');}
+  }catch(e){
+    document.getElementById('enginePill').textContent='Server offline?';
+    showErr('Cannot reach server — make sure app.py is running.');
+  }
+})();
+</script>
+</body>
+</html>
